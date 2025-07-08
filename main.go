@@ -1,0 +1,31 @@
+package main
+
+import (
+	"api/database"
+	"api/models"
+	"api/routes"
+	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	if os.Getenv("RESET") == "true" {
+		database.Reset()
+		return
+	}
+
+	database.ConnectDB()
+	database.DB.AutoMigrate(&models.Player{}, &models.RekeningBank{}, &models.Wallet{})
+
+	router := gin.Default()
+	_ = godotenv.Load()
+
+	routes.Routes(router)
+
+	log.Println("I Love You 2210")
+	log.Fatal(router.Run(":8080"))
+
+}
