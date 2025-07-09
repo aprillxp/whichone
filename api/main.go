@@ -18,7 +18,7 @@ func main() {
 	}
 
 	database.ConnectDB()
-	database.DB.AutoMigrate(&models.Player{}, &models.RekeningBank{}, &models.Wallet{})
+	database.DB.AutoMigrate(&models.Player{}, &models.Bank{}, &models.Wallet{})
 
 	router := gin.Default()
 	_ = godotenv.Load()

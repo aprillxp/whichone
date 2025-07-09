@@ -24,7 +24,7 @@ func ConnectDB() {
 	log.Println("✅ Connected to Database")
 
 	// hanya migrasi tanpa drop table
-	if err := DB.AutoMigrate(&models.Player{}, &models.RekeningBank{}, &models.Wallet{}); err != nil {
+	if err := DB.AutoMigrate(&models.Player{}, &models.Bank{}, &models.Wallet{}); err != nil {
 		log.Fatal("Migration failed:", err)
 	}
 }
