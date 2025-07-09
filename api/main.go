@@ -12,6 +12,10 @@ import (
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
+
 	if os.Getenv("RESET") == "true" {
 		database.Reset()
 		return
@@ -21,8 +25,6 @@ func main() {
 	database.DB.AutoMigrate(&models.Player{}, &models.Bank{}, &models.Wallet{})
 
 	router := gin.Default()
-	_ = godotenv.Load()
-
 	routes.Routes(router)
 
 	log.Println("I Love You 2210")

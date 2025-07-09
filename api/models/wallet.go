@@ -1,11 +1,17 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Wallet struct {
-	ID        uint `gorm:"primaryKey"`
-	PlayerID  uint `gorm:"uniqueIndex"` // unique = 1 user 1 wallet
-	Balance   int64
+	gorm.Model
+	ID        uint  `gorm:"primaryKey"`
+	PlayerID  uint  `gorm:"unique;not null"` // unique = 1 user 1 wallet
+	Balance   int64 `gorm:"not null;default:0"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

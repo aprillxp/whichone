@@ -1,13 +1,20 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type Player struct {
-	ID        uint   `gorm:"primaryKey"`
-	Username  string `gorm:"uniqueIndex;not null"`
-	Password  string `gorm:"not null"`
+	gorm.Model
+	ID       uint   `gorm:"primaryKey"`
+	Username string `gorm:"unique;not null"`
+	Password string `gorm:"not null"`
+
+	Banks  []Bank `gorm:"foreignKey:PlayerID"` // Punya banyak bank
+	Wallet Wallet `gorm:"foreignKey:PlayerID"` // Punya 1 dompet
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
-
-	Wallet Wallet `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // one to one
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
