@@ -14,12 +14,12 @@ var RedisClient *redis.Client
 var RedisCtx = context.Background()
 
 func ConnectRedis() {
-	redisAddr := os.Getenv("REDDIS_ADDR")
-	redisPassword := os.Getenv("REDDIS_PASSWORD")
-	redisDBString := os.Getenv("REDDIS_DB")
+	redisAddr := os.Getenv("REDIS_ADDR")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	redisDBString := os.Getenv("REDIS_DB")
 
 	if redisAddr == "" {
-		log.Fatal("REDDIS_ADDR is not set in .env")
+		log.Fatal("REDIS_ADDR is not set in .env")
 	}
 
 	redisDB, err := strconv.Atoi(redisDBString)
