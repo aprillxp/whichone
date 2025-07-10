@@ -13,6 +13,7 @@ type Bank struct {
 	NamaRekening  string `gorm:"size:255;not null"`
 	NomorRekening string `gorm:"size:255;unique;not null"` // No rekening harus unik
 	NamaBank      string `gorm:"size:255;not null"`
+	IsDefault     bool   `gorm:"default:false"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
