@@ -22,8 +22,10 @@ func init() {
 }
 
 func main() {
-	if os.Getenv("RESET") == "true" {
+	if os.Getenv("RESET_DB") == "true" {
+		log.Println("⚠️ RESET_DB is true. Resetting database...")
 		database.Reset()
+		log.Println("✅ Database reset complete. Exiting.")
 		return
 	}
 

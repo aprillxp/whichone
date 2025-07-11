@@ -5,6 +5,7 @@ import (
 	"api/database"
 	"api/models"
 	"api/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -81,6 +82,8 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 		return
 	}
+	fmt.Println("User found. Stored Hashed Password:", player.Password)
+
 	if !utils.CheckHashedPassword(req.Password, player.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 		return
@@ -161,7 +164,7 @@ func GetAllPlayers(c *gin.Context) {
 		query = query.Joins("LEFT JOIN banks ON players.id = banks.player_id").Where("banks.nomor_rekening ILIKE ?", "%"+nomorRekening+"%")
 	}
 	if namaBank := c.Query("nama_bank"); namaBank != "" {
-		query = query.Joins("LEFT JOIN banks ON player.id = banks.player_id").Where("banks.nama_bank ILIKE ?", "%"+namaBank+"%")
+		query = query.Joins("LEFT JOIN banks ON players.id = banks.player_id").Where("banks.nama_bank ILIKE ?", "%"+namaBank+"%")
 	}
 	if registerAt := c.Query("register_at"); registerAt != "" {
 		query = query.Where("DATE(players.created_at) = ?", registerAt)
@@ -169,16 +172,16 @@ func GetAllPlayers(c *gin.Context) {
 
 	if minBalanceStr := c.Query("min_balance"); minBalanceStr != "" {
 		if minBalance, err := strconv.ParseFloat(minBalanceStr, 64); err == nil {
-			query = query.Joins("LEFT JOIN wallets ON players.id = wallets.player.id").Where("wallets.balance >= ?", minBalance)
+			query = query.Joins("LEFT JOIN wallets ON players.id = wallets.player_id").Where("wallets.balance >= ?", minBalance)
 		}
 	}
-	if maxBalanceStr := c.Query("min_balance"); maxBalanceStr != "" {
+	if maxBalanceStr := c.Query("max_balance"); maxBalanceStr != "" {
 		if maxBalance, err := strconv.ParseFloat(maxBalanceStr, 64); err == nil {
-			query = query.Joins("LEFT JOIN wallets ON players.id = wallets.player.id").Where("wallets.balance <= ?", maxBalance)
+			query = query.Joins("LEFT JOIN wallets ON players.id = wallets.player_id").Where("wallets.balance <= ?", maxBalance)
 		}
 	}
 
-	query = query.Preload("Bank").Preload("Wallet")
+	query = query.Preload("Banks").Preload("Wallet")
 	if err := query.Find(&players).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retreived player", "details": err.Error()})
 		return
@@ -199,7 +202,7 @@ func GetPlayerByID(c *gin.Context) {
 
 	var player models.Player
 	// eager load
-	if err := db.Preload("Bank").Preload("Wallet").First(&player, playerID).Error; err != nil {
+	if err := db.Preload("Banks").Preload("Wallet").First(&player, playerID).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
 		} else {

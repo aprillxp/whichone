@@ -50,7 +50,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		playerIDconv, ok := claims["player_id"].(float64)
 		if !ok {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Player ID not found or invalid in token "})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Player ID not found or Invalid in token"})
 			c.Abort()
 			return
 		}
