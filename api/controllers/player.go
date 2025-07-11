@@ -6,6 +6,7 @@ import (
 	"api/models"
 	"api/utils"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -141,4 +142,71 @@ func Logout(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout Successfully"})
+}
+
+func GetAllPlayers(c *gin.Context) {
+	db := database.DB
+
+	var players []models.Player
+	query := db.Model(&models.Player{})
+
+	// filter by query params
+	if username := c.Query("username"); username != "" {
+		query = query.Where("username ILIKE ?", "%"+username+"%")
+	}
+	if namaRekening := c.Query("nama_rekening"); namaRekening != "" {
+		query = query.Joins("LEFT JOIN banks ON players.id = banks.player_id").Where("banks.nama_rekening ILIKE ?", "%"+namaRekening+"%")
+	}
+	if nomorRekening := c.Query("nomor_rekening"); nomorRekening != "" {
+		query = query.Joins("LEFT JOIN banks ON players.id = banks.player_id").Where("banks.nomor_rekening ILIKE ?", "%"+nomorRekening+"%")
+	}
+	if namaBank := c.Query("nama_bank"); namaBank != "" {
+		query = query.Joins("LEFT JOIN banks ON player.id = banks.player_id").Where("banks.nama_bank ILIKE ?", "%"+namaBank+"%")
+	}
+	if registerAt := c.Query("register_at"); registerAt != "" {
+		query = query.Where("DATE(players.created_at) = ?", registerAt)
+	}
+
+	if minBalanceStr := c.Query("min_balance"); minBalanceStr != "" {
+		if minBalance, err := strconv.ParseFloat(minBalanceStr, 64); err == nil {
+			query = query.Joins("LEFT JOIN wallets ON players.id = wallets.player.id").Where("wallets.balance >= ?", minBalance)
+		}
+	}
+	if maxBalanceStr := c.Query("min_balance"); maxBalanceStr != "" {
+		if maxBalance, err := strconv.ParseFloat(maxBalanceStr, 64); err == nil {
+			query = query.Joins("LEFT JOIN wallets ON players.id = wallets.player.id").Where("wallets.balance <= ?", maxBalance)
+		}
+	}
+
+	query = query.Preload("Bank").Preload("Wallet")
+	if err := query.Find(&players).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retreived player", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"players": players})
+}
+
+func GetPlayerByID(c *gin.Context) {
+	playerIDStr := c.Param("id")
+	playerID, err := strconv.ParseUint(playerIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Player ID format"})
+		return
+	}
+
+	db := database.DB
+
+	var player models.Player
+	// eager load
+	if err := db.Preload("Bank").Preload("Wallet").First(&player, playerID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid request or Failed to retrieved player", "details": err.Error()})
+		}
+		return
+
+	}
+	c.JSON(http.StatusOK, gin.H{"player": player})
 }
