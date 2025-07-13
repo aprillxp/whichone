@@ -9,7 +9,7 @@ import (
 
 func Routes(router *gin.Engine) {
 	router.GET("/", func(c *gin.Context) {
-		c.String(200, "88Wager Backen Up")
+		c.String(200, "Connected!")
 	})
 
 	// authentication (unprotected route/endpoint)
