@@ -4,7 +4,6 @@ package main
 import (
 	"api/configs" // Import configs untuk Redis
 	"api/database"
-	"api/models" // Untuk AutoMigrate
 	"api/routes"
 	"log"
 	"os"
@@ -30,8 +29,6 @@ func main() {
 	}
 
 	database.ConnectDB()
-
-	database.DB.AutoMigrate(&models.Player{}, &models.Bank{}, &models.Wallet{})
 
 	sqlDB, err := database.DB.DB()
 	if err != nil {
