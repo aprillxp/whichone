@@ -23,7 +23,11 @@ func Routes(router *gin.Engine) {
 	protected.POST("/logout", controllers.Logout)
 	protected.POST("/bank", controllers.RegisterBank)
 	protected.POST("/wallet/topup", controllers.TopUpBalance)
+
 	protected.POST("/bet", controllers.PlaceBet)
+	protected.POST("/withdraw", controllers.Withdraw)
+	protected.GET("/transaction", controllers.GetPlayerTransaction)
+
 	protected.GET("/players", controllers.GetAllPlayers)
 	protected.GET("/players/:id", controllers.GetPlayerByID)
 }

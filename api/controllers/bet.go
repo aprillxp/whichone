@@ -28,6 +28,8 @@ func PlaceBet(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Player not found"})
 		return
 	}
+
+	// check balance amount
 	if player.Wallet.Balance < req.BetAmount {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Insufficient balance."})
 		return
