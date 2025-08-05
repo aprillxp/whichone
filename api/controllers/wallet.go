@@ -90,7 +90,7 @@ func Withdraw(c *gin.Context) {
 		return
 	}
 
-	if len(player.Banks) == 0 {
+	if player.Bank.ID == 0 {
 		transaction.Rollback()
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bank is not found or not registered yet."})
 		return
