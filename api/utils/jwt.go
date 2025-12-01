@@ -25,8 +25,8 @@ func GenerateJWT(playerID uint) (string, error) {
 	return token.SignedString(JWTSecret)
 }
 
-func ParseKey(tokenStr string) (*jwt.Token, error) {
-	return jwt.Parse(tokenStr, func(token *jwt.Token) (any, error) {
-		return JWTSecret, nil
+func ParseKeyWithClaims(tokenStr string, claims jwt.Claims) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
+		return []byte("YOUR_SECRET_KEY"), nil
 	})
 }

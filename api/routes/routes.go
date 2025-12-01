@@ -3,11 +3,22 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func Routes(router *gin.Engine) {
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	router.GET("/", func(c *gin.Context) {
 		c.String(200, "Connected!")
 	})
@@ -31,4 +42,5 @@ func Routes(router *gin.Engine) {
 
 	protected.GET("/players", controllers.GetAllPlayers)
 	protected.GET("/players/:id", controllers.GetPlayerByID)
+	protected.GET("/players/me", controllers.GetMyProfile)
 }

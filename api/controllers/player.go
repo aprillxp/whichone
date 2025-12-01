@@ -109,7 +109,7 @@ func Logout(c *gin.Context) {
 	}
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-	token, err := utils.ParseKey(tokenString)
+	token, err := utils.ParseKeyWithClaims(tokenString, jwt.MapClaims{})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or Expired token", "details": err.Error()})
 		return
@@ -138,7 +138,7 @@ func Logout(c *gin.Context) {
 	}
 
 	redisClient := configs.GetRedisClient()
-	err = redisClient.SetEX(configs.RedisCtx, "jwt_blacklist"+tokenString, "ture", duration).Err()
+	err = redisClient.SetEX(configs.RedisCtx, "jwt_blacklist"+tokenString, "true", duration).Err()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to blacklist token in redis", "details": err.Error()})
 		return
@@ -212,4 +212,20 @@ func GetPlayerByID(c *gin.Context) {
 
 	}
 	c.JSON(http.StatusOK, gin.H{"player": player})
+}
+
+func GetMyProfile(c *gin.Context) {
+	userID, exist := c.Get("userID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var player models.Player
+	if err := database.DB.First(&player, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, player)
 }
