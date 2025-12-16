@@ -13,7 +13,7 @@ export default function Register() {
       alert('Register is success');
       window.location.href = '/login';
     } catch (error) {
-      alert(e?.response?.data?.error || 'Register failed');
+      alert(e?.response?.data?.error || 'Register is failed');
     } finally {
       setLoading(false);
     }
