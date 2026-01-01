@@ -5,10 +5,22 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    api
-      .get('/players/me')
-      .then((res) => setUser(res.data))
-      .catch(() => {});
+    const data = async () => {
+      try {
+        const res = await api.get('/players/me');
+        setUser(res.data);
+      } catch (err) {
+        if (err.response?.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }
+      }
+    };
+    data();
+  }, []);
+
+  useEffect(() => {
+    console.log('DASHBOARD MOUNTED');
   }, []);
 
   const logout = async () => {

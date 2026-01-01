@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import api from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '' });
+  const navigate = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
@@ -10,8 +12,9 @@ export default function Login() {
       const { data } = await api.post('/login', form);
       const token = data?.token || data?.access_token;
       if (!token) throw new Error('token is empty');
-      localStorage.setItem('token: ', token);
-      window.location.href = '/dashboard';
+
+      localStorage.setItem('token', token);
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       alert(e?.response.data?.error || 'Login failed');
     }
@@ -23,9 +26,9 @@ export default function Login() {
       <input
         className="input input-bordered w-full mb-2"
         placeholder="Email"
-        type="email"
-        value={form.email}
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
+        type="username"
+        value={form.username}
+        onChange={(e) => setForm({ ...form, username: e.target.value })}
       />
       <input
         className="input input-bordered w-full mb-2"

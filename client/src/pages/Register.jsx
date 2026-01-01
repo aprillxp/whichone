@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import api from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       await api.post('/register', form);
       alert('Register is success');
-      window.location.href = '/login';
+
+      navigate('/login');
     } catch (error) {
+      console.log(error.response);
+
       alert(e?.response?.data?.error || 'Register is failed');
     } finally {
       setLoading(false);
@@ -25,9 +30,9 @@ export default function Register() {
       <input
         className="input input-bordered w-full mb-2"
         placeholder="Email"
-        type="email"
-        value={form.email}
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
+        type="username"
+        value={form.username}
+        onChange={(e) => setForm({ ...form, username: e.target.value })}
       />
       <input
         className="input input-bordered w-full mb-4"
