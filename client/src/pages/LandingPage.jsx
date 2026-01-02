@@ -1,10 +1,13 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-2">Whichone</h1>
-      <p className="text-gray-500">Choose smarter, play better.</p>
+    <div className="flex flex-col items-center justify-center text-center gap-6">
+      <h1 className="text-4xl font-extrabold text-base-content">Choose smart, play better.</h1>
+
+      <Link to="/register" className="btn btn-primary">
+        Get Started
+      </Link>
     </div>
   );
 }

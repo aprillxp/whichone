@@ -1,3 +1,5 @@
+import './index.css';
+
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -6,8 +8,6 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import LandingPage from './pages/LandingPage.jsx';
-
-import './index.css';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
